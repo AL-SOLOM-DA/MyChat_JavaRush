@@ -1,17 +1,15 @@
-package com.solomanin.main;
+package com.solomanin.server;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.Key;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
     private static Map<String, Connection> connectionMap = new ConcurrentHashMap<>();
 
-    public void senBroadcastMessage(Message message){
+    public static void sendBroadcastMessage(Message message){
         for (Connection connection : connectionMap.values()) {
             try {
                 connection.send(message);
@@ -68,6 +66,37 @@ public class Server {
                     connection.send(new Message(MessageType.USER_ADDED, name));
                 }
             }
+        }
+
+        private void serverMainLoop(Connection connection, String userName) throws IOException, ClassNotFoundException {
+            while (true) {
+                Message message = connection.receive();
+                if (message.getType() == MessageType.TEXT) {
+                    StringBuilder str = new StringBuilder();
+                    str.append(userName).append(":").append(" ").append(message.getData());
+                    sendBroadcastMessage(new Message(MessageType.TEXT, str.toString()));
+                } else {
+                    ConsoleHelper.writeMessage("error");
+                }
+            }
+        }
+
+        public void run(){
+            ConsoleHelper.writeMessage("Установлено соединение с " + socket.getRemoteSocketAddress());
+            String userName = null;
+            try  ( Connection connection = new Connection(socket)){
+                userName = serverHandshake(connection);
+                sendBroadcastMessage(new Message(MessageType.USER_ADDED, userName));
+                notifyUsers(connection, userName);
+                serverMainLoop(connection, userName);
+            } catch (ClassNotFoundException | IOException e) {
+                ConsoleHelper.writeMessage("Произошла ошибка");
+            }
+            if(userName!=null) {
+                connectionMap.remove(userName);
+                sendBroadcastMessage(new Message(MessageType.USER_REMOVED, userName));
+            }
+            ConsoleHelper.writeMessage("Соединение с "+ socket.getRemoteSocketAddress() +" закрыто");
         }
 
     }

@@ -1,13 +1,13 @@
-package com.solomanin.main;
+package com.solomanin.server;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.nio.charset.StandardCharsets;
 
-public class Connection implements Cloneable{
+public class Connection implements Closeable {
     private final Socket socket;
     private final ObjectOutputStream out;
     private final ObjectInputStream in;

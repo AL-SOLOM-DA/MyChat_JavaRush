@@ -1,4 +1,4 @@
-package com.solomanin.main;
+package com.solomanin.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;

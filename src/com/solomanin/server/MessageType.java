@@ -1,4 +1,4 @@
-package com.solomanin.main;
+package com.solomanin.server;
 
 public enum MessageType {
     NAME_REQUEST,
