@@ -6,6 +6,7 @@ import com.solomanin.server.Message;
 import com.solomanin.server.MessageType;
 
 import java.io.IOException;
+import java.net.Socket;
 
 public class Client {
     protected Connection connection;
@@ -31,7 +32,7 @@ public class Client {
             }
         }
 
-        protected void clientHandsshake() throws IOException, ClassNotFoundException{
+        protected void clientHandshake() throws IOException, ClassNotFoundException{
             while (true){
                 Message message = connection.receive();
                 if(message.getType() == MessageType.NAME_REQUEST) {
@@ -58,6 +59,18 @@ public class Client {
                     informAboutDeletingNewUser(message.getData());
                 }
                 else throw new IOException("Unexpected MessageType");
+            }
+        }
+
+        public void run(){
+            try {
+                Connection connection = new Connection(new Socket(getServerAddress(), getServerPort()));
+                Client.this.connection = connection;
+                clientHandshake();
+                clientMainLoop();
+
+            } catch (IOException | ClassNotFoundException e) {
+                notifyConnectionStatusChanged(false);
             }
         }
     }
@@ -103,7 +116,7 @@ public class Client {
             try {
                 this.wait();
             } catch (InterruptedException e) {
-                ConsoleHelper.writeMessage("Произошла ошибка");
+                ConsoleHelper.writeMessage("Разрыв соединения");
                 return;
             }
         }

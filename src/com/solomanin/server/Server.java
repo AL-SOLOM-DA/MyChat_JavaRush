@@ -90,7 +90,7 @@ public class Server {
                 notifyUsers(connection, userName);
                 serverMainLoop(connection, userName);
             } catch (ClassNotFoundException | IOException e) {
-                ConsoleHelper.writeMessage("Произошла ошибка");
+                ConsoleHelper.writeMessage("Ошибка");
             }
             if(userName!=null) {
                 connectionMap.remove(userName);
