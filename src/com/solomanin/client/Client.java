@@ -64,8 +64,7 @@ public class Client {
 
         public void run(){
             try {
-                Connection connection = new Connection(new Socket(getServerAddress(), getServerPort()));
-                Client.this.connection = connection;
+                connection = new Connection(new Socket(getServerAddress(), getServerPort()));
                 clientHandshake();
                 clientMainLoop();
 
